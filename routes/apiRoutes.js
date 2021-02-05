@@ -29,7 +29,7 @@ module.exports = function(app) {
         fs.writeFileSync("./db/db.json", JSON.stringify(data), function(err) {
             if (err) throw (err);        
         }); 
-
+        //returning result data as json
         res.json(data);    
 
     });
