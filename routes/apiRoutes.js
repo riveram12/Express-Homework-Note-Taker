@@ -1,5 +1,5 @@
 const fs = require("fs");
-var data = JSON.parse(fs.readFileSync("./db/db.json", "utf8"));
+var data = JSON.parse(fs.readFileSync("../db/db.json", "utf8"));
 
 // create a new route
 module.exports = function (app) {
@@ -22,7 +22,7 @@ module.exports = function (app) {
     data.push(newNote);
 
     //write to the db.json file
-    fs.writeFileSync("./db/db.json", JSON.stringify(data), function (err) {
+    fs.writeFileSync("../db/db.json", JSON.stringify(data), function (err) {
       if (err) throw err;
     });
     //returning result data as json
@@ -42,7 +42,7 @@ module.exports = function (app) {
       currentNote.id = newId.toString();
       newId++;
     }
-    fs.writeFileSync("./db/db.json", JSON.stringify(data));
+    fs.writeFileSync("../db/db.json", JSON.stringify(data));
     res.json(data);
   });
 };
