@@ -3,7 +3,7 @@ var data = JSON.parse(fs.readFileSync("../db/db.json", "utf8"));
 
 // create a new route
 module.exports = function (app) {
-  // view all notes
+  // view all notes (.GET)
   app.get("/api/notes", (req, res) => {
     res.json(data);
   });
@@ -12,7 +12,7 @@ module.exports = function (app) {
     res.json(data[Number(req.params.id)]);
   });
 
-  // to post a new note
+  // to save a new note (.POST) and add it to db.json file
   app.post("/api/notes", (req, res) => {
     //giving a unqiue id to new note
     let newNote = req.body;
@@ -29,7 +29,7 @@ module.exports = function (app) {
     res.json(data);
   });
 
-  // to delete a note
+  // to delete a note (.DELETE)
   app.delete("/api/notes/:id", function (req, res) {
     //deleting unqiue id assigned to deleted note
     let noteId = req.params.id;
