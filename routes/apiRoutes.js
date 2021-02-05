@@ -9,7 +9,7 @@ module.exports = function(app) {
         res.json(data);
 
     });
-    // get notes unique id 
+    // notes unique id 
     app.get("/api/notes/:id", function(req, res) {
 
         res.json(data[Number(req.params.id)]);
@@ -17,7 +17,6 @@ module.exports = function(app) {
     });
 
     // to post a new note 
-
     app.post("/api/notes", function(req, res) {
 
         let newNote = req.body;
@@ -26,6 +25,7 @@ module.exports = function(app) {
         newNote.id = uniqueId;
         data.push(newNote);
         
+        //write to the db.json file 
         fs.writeFileSync("./db/db.json", JSON.stringify(data), function(err) {
             if (err) throw (err);        
         }); 
