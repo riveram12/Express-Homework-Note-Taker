@@ -1,48 +1,40 @@
-const fs = require("fs");
-var data = JSON.parse(fs.readFileSync("../db/db.json", "utf8"));
+const fs = require("fs")
+const express = require("express")
+const uniqid = require("uniqid")
+const path = require("path")
+const router = express.Router()
 
-// create a new route
-module.exports = function (app) {
-  // view all notes (.GET)
-  app.get("/api/notes", (req, res) => {
-    res.json(data);
-  });
-  // notes unique id
-  app.get("/api/notes/:id", (req, res) => {
-    res.json(data[Number(req.params.id)]);
-  });
+router.get("/api/notes", function(req, res) {
+    fs.readFile(path.resolve(__dirname, "../Develop/db/db.json"), "utf8", function(err, data) {
+        if (err) throw err
+        res.json(JSON.parse(data))
+    })
+})
+router.post("/api/notes", function(req, res) {
+    var body = req.body
+    console.log("body", body)
+    fs.readFile(path.resolve(__dirname, "../Develop/db/db.json"), "utf8", function(err, data) {
+        if (err) throw err
+        const currentNotes = JSON.parse(data)
+        currentNotes.push(Object.assign({ id: uniqid() }, body))
+        fs.writeFile(path.resolve(__dirname, "../Develop/db/db.json"), JSON.stringify(currentNotes), function(error) {
+            if (error) throw error
+            res.sendStatus(201)
+        })
 
-  // to save a new note (.POST) and add it to db.json file
-  app.post("/api/notes", (req, res) => {
-    //giving a unqiue id to new note
-    let newNote = req.body;
-    let uniqueId = data.length.toString();
-    console.log(uniqueId);
-    newNote.id = uniqueId;
-    data.push(newNote);
+    })
 
-    //write to the db.json file
-    fs.writeFileSync("../db/db.json", JSON.stringify(data), function (err) {
-      if (err) throw err;
-    });
-    //returning result data as json
-    res.json(data);
-  });
+});
+router.delete("/api/notes/:id", function(req, res) {
+    fs.readFile(path.resolve(__dirname, "../Develop/db/db.json"), "utf8", function(err, data) {
+        if (err) throw err
+        const currentNotes = JSON.parse(data)
+        const newNotes = currentNotes.filter(function(note) { return note.id !== req.params.id; })
+        fs.writeFile(path.resolve(__dirname, "../Develop/db/db.json"), JSON.stringify(newNotes), function(error) {
+            if (error) throw error
+            res.sendStatus(204)
+        })
+    })
+})
 
-  // to delete a note (.DELETE)
-  app.delete("/api/notes/:id", function (req, res) {
-    //deleting unqiue id assigned to deleted note
-    let noteId = req.params.id;
-    let newId = 0;
-    console.log(`Deleting note with id ${noteId}`);
-    data = data.filter((currentNote) => {
-      return currentNote.id != noteId;
-    });
-    for (currentNote of data) {
-      currentNote.id = newId.toString();
-      newId++;
-    }
-    fs.writeFileSync("../db/db.json", JSON.stringify(data));
-    res.json(data);
-  });
-};
+module.exports = router
